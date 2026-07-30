@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gruas.com.py/sitemap.xml

@@ -1,0 +1,13 @@
+{
+  "name": "Grúas Paraguay — gruas.com.py",
+  "short_name": "Grúas Paraguay",
+  "description": "Grúas, remolque y asistencia vial en Asunción y Gran Asunción.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#FFFFFF",
+  "theme_color": "#DC2626",
+  "lang": "es-PY",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
