@@ -8,11 +8,13 @@
 <link rel="canonical" href="https://gruas.com.py/">
 <meta name="theme-color" content="#DC2626">
 
-<!-- QUITAR ESTA LÍNEA AL LANZAR: el sitio debe indexarse -->
-<meta name="robots" content="noindex,nofollow">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Grúas Paraguay">
 <meta property="og:url" content="https://gruas.com.py/">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:title" content="Grúas en Asunción — Remolque y Asistencia Vial">
 <meta property="og:description" content="Siniestros, cerrajería de urgencia, cambio de neumáticos, ambulancias privadas. Escribinos por WhatsApp y te pasamos el precio cerrado antes de salir.">
 <meta property="og:image" content="https://gruas.com.py/assets/img/og-gruas-asuncion.jpg">
@@ -38,6 +40,9 @@
   "alternateName": "gruas.com.py",
   "url": "https://gruas.com.py/",
   "telephone": "+595995628862",
+  "taxID": "9327811-0",
+  "currenciesAccepted": "PYG",
+  "paymentAccepted": "Efectivo, Transferencia bancaria, Tarjeta de débito o crédito, Ueno, Mango",
   "image": "https://gruas.com.py/assets/img/og-gruas-asuncion.jpg",
   "logo": "https://gruas.com.py/assets/img/og-gruas-asuncion.jpg",
   "areaServed": [
@@ -101,7 +106,9 @@
     {"@type": "Question", "name": "¿En qué zonas trabajan?", "acceptedAnswer": {"@type": "Answer", "text": "En Asunción y en todo el Gran Asunción: San Lorenzo, Luque, Lambaré, Fernando de la Mora, Capiatá y Mariano Roque Alonso. También hacemos traslados sobre la ruta Asunción–Ciudad del Este. Si tu zona no está en la lista, consultanos igual."}},
     {"@type": "Question", "name": "¿Qué datos necesitan para mandar la grúa?", "acceptedAnswer": {"@type": "Answer", "text": "Cuatro cosas: tu ubicación, qué le pasó al vehículo, marca y modelo, y a dónde lo llevamos. Lo más rápido es compartir la ubicación de Google Maps por WhatsApp — con eso ubicamos el punto exacto aunque estés en la ruta."}},
     {"@type": "Question", "name": "¿Puedo pedir el traslado a un taller que elija yo?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. No trabajamos con un taller fijo. Llevamos el vehículo al taller, domicilio, concesionaria o depósito que nos indiques."}},
-    {"@type": "Question", "name": "¿Hacen traslado de pacientes en ambulancia?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, contamos con servicio de ambulancias privadas para traslado de pacientes entre domicilios, sanatorios y centros de estudios. Consultanos por WhatsApp con el origen, el destino y la condición del paciente para coordinarlo."}}
+    {"@type": "Question", "name": "¿Hacen traslado de pacientes en ambulancia?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, contamos con servicio de ambulancias privadas para traslado de pacientes entre domicilios, sanatorios y centros de estudios. Consultanos por WhatsApp con el origen, el destino y la condición del paciente para coordinarlo."}},
+    {"@type": "Question", "name": "¿Emiten factura legal?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Emitimos factura legal a nombre de la persona o de la empresa. Avisanos al momento de coordinar el servicio y decinos a nombre de quién va."}},
+    {"@type": "Question", "name": "¿Cómo puedo pagar?", "acceptedAnswer": {"@type": "Answer", "text": "Podés pagar en efectivo, por transferencia bancaria, con tarjeta de débito o crédito, o desde Ueno y Mango. Los montos que te pasamos ya incluyen IVA."}}
   ]
 }
 </script>
@@ -264,7 +271,24 @@ button{ font-family:inherit; cursor:pointer; }
 .hero-instructions-mobile{ margin-top:24px; }
 @media (min-width:1024px){ .hero-instructions-mobile{ display:none; } }
 
-/* franja confianza (omitida por falta de datos, ver comentario) */
+/* franja confianza (h) */
+.franja{ background:var(--ink-band); color:#fff; padding-block:28px; margin-top:clamp(48px,7vw,88px); }
+.franja-grid{ display:grid; grid-template-columns:1fr; gap:0; margin:0; }
+@media (min-width:768px){ .franja-grid{ grid-template-columns:repeat(3,1fr); } }
+.franja-cell{ padding:16px 0; }
+@media (min-width:768px){
+  .franja-cell{ padding:8px 32px; }
+  .franja-cell + .franja-cell{ border-left:1px solid rgba(255,255,255,.12); }
+  .franja-cell:first-child{ padding-left:0; }
+}
+@media (max-width:767px){
+  .franja-cell + .franja-cell{ border-top:1px solid rgba(255,255,255,.12); }
+}
+.franja-cell dt{
+  font-size:var(--label); font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  color:rgba(255,255,255,.5); margin-bottom:6px;
+}
+.franja-cell dd{ margin:0; font-weight:800; font-size:17px; }
 
 /* servicios bento (d) */
 .servicios-head{ max-width:60ch; margin-bottom:48px; }
@@ -382,9 +406,18 @@ button{ font-family:inherit; cursor:pointer; }
 .banda-cta .cta-pair{ justify-content:center; }
 
 /* precios (a) */
-.precios-grid{ display:grid; gap:48px; grid-template-columns:1fr; }
-@media (min-width:1024px){ .precios-grid{ grid-template-columns:1fr; max-width:760px; } }
+.precios-grid{ display:grid; gap:48px; grid-template-columns:1fr; align-items:start; }
+@media (min-width:1024px){ .precios-grid{ grid-template-columns:1.4fr 1fr; } }
 .precios-grid p + p{ margin-top:16px; }
+.pagos-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:32px; }
+.pagos-card h3{ font-size:19px; margin-bottom:18px; }
+.pagos-list{ display:grid; gap:12px; }
+.pagos-list li{ display:flex; align-items:center; gap:10px; font-weight:600; font-size:16px; }
+.pagos-list li::before{
+  content:""; width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none;
+}
+.pagos-note{ margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+.pagos-note + .pagos-note{ margin-top:8px; padding-top:0; border-top:0; }
 
 /* FAQ (f) centrado */
 .faq-wrap{ max-width:760px; margin-inline:auto; text-align:left; }
@@ -600,13 +633,27 @@ button{ font-family:inherit; cursor:pointer; }
   </div>
 </section>
 
-<!--
-  SECCIÓN "FRANJA DE CONFIANZA" (RUC, años, seguro) OMITIDA A PROPÓSITO.
-  Ninguno de los cuatro datos (RUC, años de experiencia, seguro de traslado,
-  factura legal) está confirmado todavía — ver BUILD-SPEC.md §9.2.
-  Cuando tengas al menos uno, volvé a §6.4 del spec y reconstruí esta franja
-  como banda oscura full-bleed entre el hero y "Servicios".
--->
+<!-- ================= FRANJA DE CONFIANZA (h) full-bleed =================
+     Solo datos confirmados. "Años en el rubro" y "traslado asegurado" siguen
+     fuera a propósito: no están confirmados (BUILD-SPEC.md §9.2). -->
+<section class="franja full-bleed">
+  <div class="container">
+    <dl class="franja-grid">
+      <div class="franja-cell">
+        <dt>RUC</dt>
+        <dd>9327811-0</dd>
+      </div>
+      <div class="franja-cell">
+        <dt>Factura</dt>
+        <dd>Emitimos factura legal</dd>
+      </div>
+      <div class="franja-cell">
+        <dt>Formas de pago</dt>
+        <dd>Efectivo, transferencia, tarjeta, Ueno y Mango</dd>
+      </div>
+    </dl>
+  </div>
+</section>
 
 <!-- ================= SERVICIOS (d) bento ================= -->
 <section class="section" id="servicios">
@@ -845,19 +892,31 @@ button{ font-family:inherit; cursor:pointer; }
 </section>
 
 <!-- ================= PRECIOS (a) ================= -->
-<!-- Tarjeta de "Formas de pago" omitida: {{PAGOS}} no está confirmado.
-     Cuando lo esté, agregar la tarjeta de §6.11 del spec y volver esta
-     sección a grid de dos columnas. -->
 <section class="section" id="precios">
   <div class="container">
-    <div class="precios-grid fade-up">
-      <span class="eyebrow">Precios</span>
-      <h2 style="font-size:var(--h2);">Cuánto sale y cómo se paga</h2>
-      <p class="lead" style="margin-top:16px;">No publicamos una lista de precios porque el monto real depende de tres cosas: desde dónde te levantamos, hasta dónde llevamos el vehículo y qué tipo de unidad hace falta. Publicar un número suelto sería adivinar.</p>
-      <p class="lead">Lo que sí hacemos es cerrarte el precio antes de salir. Mandanos la ubicación y el destino por WhatsApp y te pasamos el monto en guaraníes, con el IVA ya incluido. Ese es el monto que pagás.</p>
-      <div class="cta-pair" style="margin-top:28px;">
-        <a class="btn btn-wa" href="https://wa.me/595995628862?text=Hola%2C%20vi%20su%20p%C3%A1gina%20web%20y%20quiero%20pedir%20un%20precio%20para%20un%20remolque" target="_blank" rel="noopener">Pedí tu precio por WhatsApp</a>
-        <a class="btn btn-call" href="tel:+595995628862">Llamar ahora</a>
+    <div class="precios-grid">
+      <div class="fade-up">
+        <span class="eyebrow">Precios</span>
+        <h2 style="font-size:var(--h2);">Cuánto sale y cómo se paga</h2>
+        <p class="lead" style="margin-top:16px;">No publicamos una lista de precios porque el monto real depende de tres cosas: desde dónde te levantamos, hasta dónde llevamos el vehículo y qué tipo de unidad hace falta. Publicar un número suelto sería adivinar.</p>
+        <p class="lead">Lo que sí hacemos es cerrarte el precio antes de salir. Mandanos la ubicación y el destino por WhatsApp y te pasamos el monto en guaraníes, con el IVA ya incluido. Ese es el monto que pagás.</p>
+        <div class="cta-pair" style="margin-top:28px;">
+          <a class="btn btn-wa" href="https://wa.me/595995628862?text=Hola%2C%20vi%20su%20p%C3%A1gina%20web%20y%20quiero%20pedir%20un%20precio%20para%20un%20remolque" target="_blank" rel="noopener">Pedí tu precio por WhatsApp</a>
+          <a class="btn btn-call" href="tel:+595995628862">Llamar ahora</a>
+        </div>
+      </div>
+
+      <div class="pagos-card fade-up">
+        <h3>Formas de pago</h3>
+        <ul class="pagos-list">
+          <li>Efectivo</li>
+          <li>Transferencia bancaria</li>
+          <li>Tarjeta de débito o crédito</li>
+          <li>Ueno</li>
+          <li>Mango</li>
+        </ul>
+        <p class="small pagos-note">Emitimos factura legal. Pedila al momento de coordinar el servicio.</p>
+        <p class="small pagos-note">Los montos que te pasamos ya incluyen IVA.</p>
       </div>
     </div>
   </div>
@@ -896,9 +955,15 @@ button{ font-family:inherit; cursor:pointer; }
         <summary>¿Hacen traslado de pacientes en ambulancia?</summary>
         <p>Sí, contamos con servicio de ambulancias privadas para traslado de pacientes entre domicilios, sanatorios y centros de estudios. Consultanos por WhatsApp con el origen, el destino y la condición del paciente para coordinarlo.</p>
       </details>
-      <!-- F7 (¿Emiten factura legal?), F8 (seguro) y F9 (pagos) omitidas:
-           dependen de {{RUC}}, {{SEGURO_TRASLADO}} y {{PAGOS}}. Agregalas
-           junto con su entrada en el FAQPage schema cuando estén confirmadas. -->
+      <details class="faq-item">
+        <summary>¿Emiten factura legal?</summary>
+        <p>Sí. Emitimos factura legal a nombre de la persona o de la empresa. Avisanos al momento de coordinar el servicio y decinos a nombre de quién va.</p>
+      </details>
+      <details class="faq-item">
+        <summary>¿Cómo puedo pagar?</summary>
+        <p>Podés pagar en efectivo, por transferencia bancaria, con tarjeta de débito o crédito, o desde Ueno y Mango. Los montos que te pasamos ya incluyen IVA.</p>
+      </details>
+      <!-- F8 (seguro de traslado) sigue omitida: no está confirmada. -->
     </div>
   </div>
 </section>
@@ -921,10 +986,11 @@ button{ font-family:inherit; cursor:pointer; }
 
         <ul class="trust-stack">
           <li>Precio cerrado antes de salir</li>
+          <li>Emitimos factura legal</li>
+          <li>Efectivo, transferencia, tarjeta, Ueno y Mango</li>
           <li>Cobertura en Asunción y Gran Asunción</li>
         </ul>
-        <!-- Agregar aquí cuando estén confirmados: "Emitimos factura legal"
-             (si {{RUC}}) y el texto de {{SEGURO_TRASLADO}} (si existe). -->
+        <!-- {{SEGURO_TRASLADO}} sigue fuera: no está confirmado. -->
       </div>
 
       <div class="fade-up">
@@ -977,7 +1043,8 @@ button{ font-family:inherit; cursor:pointer; }
         <h4>Contacto</h4>
         <p>Grúas Paraguay — gruas.com.py</p>
         <a href="tel:+595995628862">+595 995 628 862</a>
-        <!-- Agregar cuando existan: {{DIRECCION}}, {{EMAIL}}, "RUC: {{RUC}}",
+        <p>RUC: 9327811-0</p>
+        <!-- Agregar cuando existan: {{DIRECCION}}, {{EMAIL}},
              {{HORARIOS_TEXTO}} (nunca escribir "24/7" sin confirmación). -->
       </div>
       <div class="footer-col">
