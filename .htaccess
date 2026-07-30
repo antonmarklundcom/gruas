@@ -6,6 +6,19 @@ ErrorDocument 404 /404.html
   Require all denied
 </Files>
 
+# ---- archivos internos del repo (si se despliega con Git, todo el repo
+#      termina en public_html: el spec y los metadatos no deben ser públicos) ----
+<FilesMatch "\.(md|jsonl|log|yml|yaml|json)$">
+  Require all denied
+</FilesMatch>
+<Files "site.webmanifest">
+  Require all granted
+</Files>
+<Files ".gitignore">
+  Require all denied
+</Files>
+RedirectMatch 404 /\.git
+
 # ---- forzar https y un único host canónico (sin www) ----
 # Evita que Google indexe la misma página en cuatro direcciones distintas.
 <IfModule mod_rewrite.c>
