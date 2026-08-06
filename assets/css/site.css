@@ -266,7 +266,7 @@ img{max-width:100%;height:auto;display:block}
   font-family:var(--font-display);font-size:var(--t-5);line-height:1;
   color:var(--accent);opacity:.2;letter-spacing:-.04em;pointer-events:none;
 }
-.p5__step h4,.p5__step p{position:relative}
+.p5__step h3,.p5__step h4,.p5__step p{position:relative}
 /* Riel vertical conector en móvil */
 @media (max-width:767px){
   .p5__step{padding-left:var(--s-8);padding-top:0}

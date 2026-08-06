@@ -30,15 +30,9 @@
 <main class="card card--hair grain" style="max-width:560px;width:100%">
   <span class="eyebrow">Grúas Paraguay</span>
 
-  <div id="ok-block">
-    <h1 style="font-size:var(--t-3)">Recibimos tu consulta</h1>
-    <p>Te contactamos al número que nos dejaste. Si es urgente, no esperes — escribinos por WhatsApp o llamanos ahora.</p>
-  </div>
-
-  <div id="err-block" hidden>
-    <h1 style="font-size:var(--t-3)">No pudimos enviar la consulta</h1>
-    <p>Algo falló al enviar el formulario. Escribinos por WhatsApp o llamanos y lo resolvemos ahí mismo.</p>
-  </div>
+  <!-- Una sola h1: el estado de error reescribe el texto, no agrega otro título. -->
+  <h1 id="titulo" style="font-size:var(--t-3)">Recibimos tu consulta</h1>
+  <p id="bajada">Te contactamos al número que nos dejaste. Si es urgente, no esperes — escribinos por WhatsApp o llamanos ahora.</p>
 
   <div class="btn-row">
     <a class="btn btn--wa" href="https://wa.me/595995628862?text=Hola%2C%20vengo%20de%20gruas.com.py%20%E2%80%94%20necesito%20ayuda."
@@ -57,8 +51,9 @@
 
 <script>
 if (new URLSearchParams(window.location.search).has('error')) {
-  document.getElementById('ok-block').hidden = true;
-  document.getElementById('err-block').hidden = false;
+  document.getElementById('titulo').textContent = 'No pudimos enviar la consulta';
+  document.getElementById('bajada').textContent =
+    'Algo falló al enviar el formulario. Escribinos por WhatsApp o llamanos y lo resolvemos ahí mismo.';
 }
 </script>
 <script src="/assets/js/site.js" defer></script>

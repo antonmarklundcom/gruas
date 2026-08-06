@@ -14,6 +14,12 @@ ErrorDocument 404 /404.html
 <Files "site.webmanifest">
   Require all granted
 </Files>
+# El arnés de QA no es parte del sitio público.
+<FilesMatch "^qa/">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/qa/
+
 <Files ".gitignore">
   Require all denied
 </Files>
