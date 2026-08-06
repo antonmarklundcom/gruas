@@ -10,9 +10,23 @@ låser stilriktningen och listar filnamn + de exakta prompts som användes.
 
 Higgsfields CDN-host (`d8j0ntlcm91z4.cloudfront.net`) är blockerad av
 sandbox-proxyn för Claude — 403 org policy, ej en bugg, ej möjlig att runda.
-Ladda ner de 9 PNG:erna från länkarna nedan i din egen webbläsare, ladda upp
-dem till repot (t.ex. `assets/img/raw/`), så konverterar Claude till AVIF +
-WebP i rätt sökväg och committar.
+Ladda ner PNG:erna i din egen webbläsare och ladda upp dem till
+`assets/img/raw/` i repot. Konverteringen är skriptad:
+
+```bash
+pip install pillow pillow-avif-plugin
+python3 tools/build-images.py          # --check listar bara vad som saknas
+```
+
+Skriptet matchar källfilerna på **jobb-id** lika väl som på slug, så
+webbläsarens filnamn (`hf_20260806_111528_3a9dbff3-...png`) kan behållas som
+det är. Målstorlekarna läses ur HTML:ens `width`/`height`, och bilden
+center-croppas till rätt aspect ratio före skalning.
+
+**Åtta av de nio är wire:ade i HTML:en.** Nr 9,
+`operador-coordinando-servicio`, är specad i BUILD-SPEC-v2.md men refereras
+inte från någon sida ännu — den behövs alltså inte för att fylla sajtens
+bildslots.
 
 | # | Filnamn (utan ändelse) | Ratio | Higgsfield job id |
 |---|---|---|---|
