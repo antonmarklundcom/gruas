@@ -9,49 +9,36 @@
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.ico">
+<meta name="theme-color" content="#0E0E0F">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..500&family=Geist:wght@400;500&display=swap">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..500&family=Geist:wght@400;500&display=swap">
+
+<link rel="stylesheet" href="/assets/css/site.css">
 <style>
-:root{
-  --bg:#FFFFFF; --surface:#F7F8FA; --text:#0F1317; --muted:#59626C;
-  --accent:#DC2626; --border:#E4E7EB; --ink-band:#0F1317;
-  --r:14px; --r-sm:12px; --ease:cubic-bezier(0.16,1,0.3,1);
-  --container: min(760px, 100% - 48px);
-}
-@media (max-width:640px){ :root{ --container: min(760px, 100% - 32px); } }
-*,*::before,*::after{ box-sizing:border-box; }
-body{
-  margin:0; font-family:'Inter',system-ui,sans-serif; color:var(--text);
-  background:var(--bg); font-size:17px; line-height:1.65;
-}
-.container{ width:var(--container); margin-inline:auto; }
-header{ border-bottom:1px solid var(--border); }
-header .container{ display:flex; align-items:center; justify-content:space-between; height:76px; }
-.logo{ font-weight:800; font-size:19px; text-decoration:none; color:var(--text); }
-.back{ font-size:15px; font-weight:600; text-decoration:none; color:var(--text); }
-main{ padding-block:clamp(48px,7vw,88px); }
-h1{ font-weight:800; font-size:clamp(32px,5vw,48px); line-height:1.1; margin:0 0 12px; }
-.updated{ color:var(--muted); font-size:15px; margin:0 0 40px; }
-h2{ font-weight:800; font-size:clamp(21px,2.6vw,26px); line-height:1.2; margin:40px 0 12px; }
-p, li{ color:#2A3339; }
-p{ margin:0 0 14px; }
-ul{ padding-left:22px; margin:0 0 14px; }
-li{ margin-bottom:8px; }
-a{ color:var(--accent); }
-.note{
-  background:var(--surface); border:1px solid var(--border); border-radius:var(--r);
-  padding:24px; margin:32px 0;
-}
-footer{ background:var(--ink-band); color:rgba(255,255,255,.7); padding-block:40px; margin-top:64px; font-size:15px; }
-footer a{ color:#fff; text-decoration:none; }
+  .container{max-width:760px;margin-inline:auto;padding-inline:var(--gutter)}
+  .hdr__in{justify-content:space-between}
+  .back{text-decoration:none;color:var(--ink-70);font-size:var(--t--1)}
+  .back:hover{color:var(--ink);text-decoration:underline}
+  main{padding-block:clamp(var(--s-12),7vw,var(--s-24))}
+  h2{font-size:var(--t-2);margin-top:var(--s-12)}
+  .updated{color:var(--ink-55);font-size:var(--t--1);margin-bottom:var(--s-12)}
+  ul{padding-left:var(--s-6);margin:0 0 var(--s-4);color:var(--ink-70)}
+  li{margin-bottom:var(--s-2);max-width:var(--measure)}
+  a{color:var(--accent)}
+  .note{background:var(--surface);border:1px solid var(--hairline);
+        border-radius:var(--r-md);padding:var(--s-6);margin-block:var(--s-8)}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <a class="logo" href="/">Grúas Paraguay</a>
+<header class="hdr" data-sticky-header>
+  <div class="container hdr__in">
+    <a class="hdr__brand" href="/" style="margin-right:0">gruas<span style="color:var(--accent)">.</span>com.py</a>
     <a class="back" href="/">← Volver al inicio</a>
   </div>
 </header>
@@ -110,11 +97,13 @@ footer a{ color:#fff; text-decoration:none; }
   </div>
 </main>
 
-<footer>
+<footer class="ftr grain">
   <div class="container">
     <a href="/">← Volver a gruas.com.py</a>
+    <p class="small" style="margin-top:var(--s-4);margin-bottom:0">RUC 9327811-0 — Asunción, Paraguay.</p>
   </div>
 </footer>
 
+<script src="/assets/js/site.js" defer></script>
 </body>
 </html>
