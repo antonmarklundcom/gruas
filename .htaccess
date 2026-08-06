@@ -14,6 +14,12 @@ ErrorDocument 404 /404.html
 <Files "site.webmanifest">
   Require all granted
 </Files>
+# El arnés de QA no es parte del sitio público.
+<FilesMatch "^qa/">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/qa/
+
 <Files ".gitignore">
   Require all denied
 </Files>
@@ -36,6 +42,14 @@ RedirectMatch 404 /\.git
   AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
 </IfModule>
 
+# ---- tipos MIME modernos ----
+# Apache antiguo no conoce AVIF: sin esto se sirve como octet-stream y el
+# navegador descarta el <source> antes de mirarlo.
+<IfModule mod_mime.c>
+  AddType image/avif .avif
+  AddType image/webp .webp
+</IfModule>
+
 # ---- caché ----
 <IfModule mod_expires.c>
   ExpiresActive On
@@ -45,6 +59,7 @@ RedirectMatch 404 /\.git
   ExpiresByType image/jpeg                "access plus 1 year"
   ExpiresByType image/png                 "access plus 1 year"
   ExpiresByType image/webp                "access plus 1 year"
+  ExpiresByType image/avif                "access plus 1 year"
   ExpiresByType image/svg+xml             "access plus 1 year"
   ExpiresByType image/x-icon              "access plus 1 year"
 </IfModule>
