@@ -36,3 +36,22 @@ CHROME_PATH=/opt/pw-browsers/chromium node_modules/.bin/lighthouse \
 **Prestandasiffran är inte giltig förrän bildfilerna finns.** Med nio saknade
 bilder som ger 404 rapporterar Lighthouse Speed Index ~19 s trots FCP och LCP
 på 1,5 s. Se förbehållet i `qa-preflight.md`.
+
+## render.js — arnés de render
+
+`node qa/render.js check` levanta el sitio, lo abre en Chromium a 390px y
+1440px y falla si alguna página pide un recurso inexistente, tira un error de
+JS o desborda horizontalmente. Descubre las rutas solo, leyendo los .html.
+
+    npm install        # una vez
+    npm run qa         # las 24 páginas
+
+Otros modos: `view` (pantallazos sucesivos), `el` (una sección aislada),
+`measure` (alto de cada sección en móvil). Ver la cabecera de render.js.
+
+**Por qué está esto acá.** La versión anterior del sitio se dio por verificada
+leyendo el código. Así se publicaron un hero con texto oscuro sobre fondo
+oscuro, un banner de consentimiento tapando los botones de contacto en móvil,
+y una hoja de estilos cacheada un año pegada a un HTML nuevo. Ninguno de los
+tres se ve leyendo HTML. Antes de dar por buena una tanda de cambios de
+diseño, corré `npm run qa` y mirá los pantallazos.
