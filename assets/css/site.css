@@ -363,7 +363,7 @@ body.menu-abierto{overflow:hidden}
 }
 @media (min-width:1024px){
   .hero--split .p1{grid-template-columns:55fr 45fr;align-items:center}
-  .hero__photo{aspect-ratio:5/6;max-height:640px}
+  .hero__photo{aspect-ratio:4/5;max-height:640px}
 }
 @media (max-width:1023px){
   .hero__photo{aspect-ratio:16/9}

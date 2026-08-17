@@ -1,10 +1,11 @@
 # Bildprompts — vertikalt set "gruas", DAYLIGHT / HUMAN
 
-Kört på **Nano Banana Pro / Nano Banana 2** via Higgsfield. Alla nio bilder
-finns redan genererade i Higgsfield-historiken (2026-08-06). Detta dokument
-låser stilriktningen och listar filnamn + de exakta prompts som användes.
+Kört på **Nano Banana Pro / Nano Banana 2** via Higgsfield. Två omgångar finns
+i historiken: 2026-08-06 (nio bilder) och 2026-08-17 (åtta bilder). Det som
+ligger live är en blandning — se tabellen direkt nedan.
 
-**Filnamnen är bindande.** HTML:en wire:as mot exakt dessa strängar. Byt inte.
+**Filnamnen är bindande.** HTML:en wire:as mot exakt dessa strängar. Byt bara
+när motivet byts, och byt då alltid slugen (se cachenoten nedan).
 
 ## Nedladdning
 
@@ -23,26 +24,71 @@ webbläsarens filnamn (`hf_20260806_111528_3a9dbff3-...png`) kan behållas som
 det är. Målstorlekarna läses ur HTML:ens `width`/`height`, och bilden
 center-croppas till rätt aspect ratio före skalning.
 
-**Åtta av de nio är wire:ade i HTML:en.** Nr 9,
-`operador-coordinando-servicio`, är specad i BUILD-SPEC-v2.md men refereras
-inte från någon sida ännu — den behövs alltså inte för att fylla sajtens
-bildslots.
+## Slugarna som ligger live nu (efter 2026-08-17-omgången)
 
-| # | Filnamn (utan ändelse) | Ratio | Higgsfield job id |
+Sex av åtta slots fylls av 2026-08-17-omgången. Två slots har ingen motsvarighet
+där och behåller sin bild från 2026-08-06.
+
+| Slug (utan ändelse) | Storlek | Higgsfield job id | Omgång |
 |---|---|---|---|
-| 1 | `grua-remolque-asuncion-noche` | 21:9 | `3a9dbff3-6dc7-456f-bcac-11e419451bf6` |
-| 2 | `grua-en-ruta-balizas-noche` | 21:9 | `47743f6c-b261-4aa6-a030-bd9c8caf84fe` |
-| 3 | `gran-asuncion-grua-circulando` | 21:9 | `36624198-025c-436f-86dd-dcf28048f176` |
-| 4 | `remolque-plataforma-vehiculo` | 4:3 | `3c01be81-0dd5-47cb-a4c0-d88d65926125` |
-| 5 | `auxilio-mecanico-paso-de-corriente` | 4:3 | `69410f8b-829c-4169-8d64-a7e695a5a66d` |
-| 6 | `cerrajeria-apertura-de-vehiculo` | 4:3 | `78548541-312b-47da-a7d1-94e3c3cd0dd1` |
-| 7 | `siniestro-vial-retiro-de-vehiculo` | 4:3 | `3754da75-e567-49ad-bf1a-5eab2020dfee` |
-| 8 | `ambulancia-privada-traslado` | 4:3 | `0e215751-0a94-4723-96a1-6c6cc9e29a0e` |
-| 9 | `operador-coordinando-servicio` | 4:3 | `000d190b-c2fa-4fa8-b573-b5f627570a0a` |
+| `grua-plataforma-cargando-auto-asuncion` | 1280×1600 (4:5) | `b22a19e4-352b-4862-96d0-34cec8d2b6f6` | 08-17 |
+| `remolque-plataforma-carga-de-auto` | 1024×768 | `6a172819-5e21-4e69-b7e0-eee3609f8347` | 08-17 |
+| `auxilio-mecanico-arranque-con-cables` | 1024×768 | `057e760d-b2ce-485e-a9f7-d77180561e92` | 08-17 |
+| `cerrajeria-apertura-de-puerta-de-auto` | 1024×768 | `0d329fcb-1be7-4748-ab11-06676eac38f5` | 08-17 |
+| `siniestro-vial-auto-danado-en-plataforma` | 1024×768 | `e068eb67-fe03-42e2-b1c9-c3ed51a7864c` | 08-17 |
+| `auto-parado-en-la-banquina-de-la-ruta` | 1024×439 | `87671de4-5b6f-4d4d-809f-22cd525a4d32` | 08-17 |
+| `gran-asuncion-grua-circulando` | 1024×439 | `36624198-025c-436f-86dd-dcf28048f176` | 08-06 |
+| `ambulancia-privada-traslado` | 1024×768 | `0e215751-0a94-4723-96a1-6c6cc9e29a0e` | 08-06 |
 
-(Filnamnen behåller ursprungliga slugs som "-noche"/"-vehiculo" — HTML:en är
-redan wire:ad mot dem, så vi byter inte filnamnet trots att motivet nu är
-dagsljus, inte natt.)
+Heron är **4:5** och `.hero__photo` är satt till `aspect-ratio:4/5` på desktop.
+Under 1024px croppar CSS:en samma fil till 16:9 — den centrerade croppen tar
+med lastbil, bil och operatör, så det behövs ingen separat mobilbild.
+
+### Slugbyte = cachebrytning
+
+`.htaccess` cachar bilder ett år och `<img>` har ingen `?v=`. **Byter du motiv
+på en slot måste du byta slug**, annars sitter återvändande besökare kvar med
+den gamla bilden. Därför är alla sex nya slots namngivna på nytt, och därför
+är slugarna beskrivande snarare än generiska. De gamla `-noche`-namnen är också
+borta: bilderna visade dagsljus.
+
+### Refuserade 2026-08-17
+
+Två av de åtta nya genereringarna används inte:
+
+| Job id | Varför inte |
+|---|---|
+| `8b5b07ab-e71c-4614-ad90-d3fd815770e6` | Läsbar text i två lager: vägskylten stavar `BOTA PY02` (skulle vara RUTA PY02), och lastbilsdörren har ett textblock plus en sifferrad i telefonnummerform. Går inte att beskära bort — skylten sitter till höger, dörren mitt i bild. |
+| `8fcdb245-5a49-43ef-83dd-bbcb38a94a03` | Påhittad firmatext tryckt på operatörens väst, mitt i bilden. Lastbilen till höger är ren, men en beskärning som tar bort västen räcker inte till 21:9-slotens proportioner. |
+
+Regeln som fällde båda: **inget påhittat telefonnummer och ingen påhittad
+firmabranding får ut på sajten.** Ett falskt nummer på en bogseringssajt är
+aktivt skadligt — någon ringer det.
+
+Kvarvarande text i det som *används*: `gran-asuncion-grua-circulando` har ett
+oläsligt märke på flygeln och en suddig skylt i bakgrunden, och
+`ambulancia-privada-traslado` har en lapp på dörren med oläsliga krumelurer.
+Inget av det går att tyda som ord eller siffror.
+
+---
+
+## 2026-08-06-omgången
+
+Prompterna nedan är från 2026-08-06. Bara nr 3 och nr 8 ligger kvar live
+(se tabellen ovan); resten är ersatta. De står kvar som stilreferens inför
+nästa omgång.
+
+| # | Ursprunglig slug | Higgsfield job id | Status |
+|---|---|---|---|
+| 1 | `grua-remolque-asuncion-noche` | `3a9dbff3-6dc7-456f-bcac-11e419451bf6` | ersatt |
+| 2 | `grua-en-ruta-balizas-noche` | `47743f6c-b261-4aa6-a030-bd9c8caf84fe` | ersatt |
+| 3 | `gran-asuncion-grua-circulando` | `36624198-025c-436f-86dd-dcf28048f176` | **live** |
+| 4 | `remolque-plataforma-vehiculo` | `3c01be81-0dd5-47cb-a4c0-d88d65926125` | ersatt |
+| 5 | `auxilio-mecanico-paso-de-corriente` | `69410f8b-829c-4169-8d64-a7e695a5a66d` | ersatt |
+| 6 | `cerrajeria-apertura-de-vehiculo` | `78548541-312b-47da-a7d1-94e3c3cd0dd1` | ersatt |
+| 7 | `siniestro-vial-retiro-de-vehiculo` | `3754da75-e567-49ad-bf1a-5eab2020dfee` | ersatt |
+| 8 | `ambulancia-privada-traslado` | `0e215751-0a94-4723-96a1-6c6cc9e29a0e` | **live** |
+| 9 | `operador-coordinando-servicio` | `000d190b-c2fa-4fa8-b573-b5f627570a0a` | aldrig wire:ad |
 
 ---
 
