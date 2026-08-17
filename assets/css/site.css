@@ -422,6 +422,13 @@ body.menu-abierto{overflow:hidden}
 @media (min-width:1024px){
   .p3{grid-template-columns:repeat(3,1fr)}
   .p3__wide{grid-column:span 2}
+  /* Con cuatro tarjetas, la destacada ocupa la fila entera y las otras tres
+     quedan debajo en una sola línea: sin huecos y con jerarquía clara. */
+  .p3--feature .p3__wide{grid-column:1 / -1}
+  .p3--feature .p3__wide{display:grid;grid-template-columns:1.1fr 1fr;
+                         gap:var(--s-8);align-items:center}
+  .p3--feature .p3__wide picture{grid-row:1 / span 4}
+  .p3--feature .p3__wide .thumb{aspect-ratio:16/10;margin-bottom:0;height:100%}
 }
 
 /* ==========================================================================
