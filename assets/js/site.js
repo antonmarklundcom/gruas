@@ -82,6 +82,46 @@
    -------------------------------------------------------------------------- */
 (function(){
   window.dataLayer = window.dataLayer || [];
+
+  /* Registro propio, además del dataLayer. Un clic a wa.me se va a otro
+     dominio y no deja rastro: sin esto no hay manera de demostrar cuántos
+     leads generó el sitio ni de qué zona salieron. Sin datos personales. */
+  var LOGGED = { whatsapp_click:1, call_click:1, calc_submit:1, form_submit:1 };
+
+  function ctx(){
+    var q = new URLSearchParams(location.search);
+    var form = document.querySelector('[data-cotizador]');
+    var d = form ? new FormData(form) : null;
+    return {
+      page: location.pathname,
+      referrer: document.referrer || '',
+      utm_source: q.get('utm_source') || '',
+      utm_medium: q.get('utm_medium') || '',
+      utm_campaign: q.get('utm_campaign') || '',
+      situacion: d ? (d.get('situacion') || '') : '',
+      vehiculo:  d ? (d.get('vehiculo')  || '') : '',
+      zona:      d ? (d.get('zona')      || '') : '',
+      destino:   d ? (d.get('destino')   || '') : '',
+      viewport: window.innerWidth + 'x' + window.innerHeight
+    };
+  }
+
+  window.GRUAS_LOG = function(name, loc){
+    if (!LOGGED[name]) return;
+    var body = ctx();
+    body.event = name;
+    body.loc = loc || '';
+    try {
+      var payload = JSON.stringify(body);
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/lead-event.php', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/lead-event.php', { method:'POST', body:payload, keepalive:true,
+                                   headers:{'Content-Type':'application/json'} });
+      }
+    } catch (err) { /* nunca bloquear el contacto por un fallo de registro */ }
+  };
+
   document.addEventListener('click', function(e){
     var t = e.target.closest('[data-ev]');
     if (!t) return;
@@ -91,6 +131,7 @@
       page_path: location.pathname,
       site: location.hostname
     });
+    window.GRUAS_LOG(t.dataset.ev, t.dataset.evLoc || '');
   }, true);
 })();
 
@@ -109,6 +150,46 @@ var GRUAS = (function(){
   }
 
   return { number: WA_NUMBER, waLink: waLink };
+})();
+
+/* --------------------------------------------------------------------------
+   3.5 Cotizador por pasos — mejora progresiva.
+      Sin JS se ven las tres preguntas de una vez y el formulario funciona
+      igual. Con JS mostramos una por vez: la página se acorta muchísimo en
+      móvil y el "30 segundos" del título deja de ser una promesa vacía.
+   -------------------------------------------------------------------------- */
+(function(){
+  var form = document.querySelector('[data-cotizador]');
+  if (!form) return;
+
+  var fs = Array.prototype.slice.call(form.querySelectorAll('fieldset'));
+  if (fs.length < 2) return;
+
+  var tail = Array.prototype.slice.call(
+    form.querySelectorAll('.field, button[type="submit"]'));
+  var shown = 1;
+
+  fs.forEach(function(f, i){
+    var legend = f.querySelector('legend');
+    if (!legend || legend.querySelector('.step-of')) return;
+    var tag = document.createElement('span');
+    tag.className = 'step-of';
+    tag.textContent = 'Paso ' + (i + 1) + ' de ' + fs.length;
+    legend.insertBefore(tag, legend.firstChild);
+  });
+
+  function render(){
+    fs.forEach(function(f, i){ f.hidden = i >= shown; });
+    tail.forEach(function(el){ el.hidden = shown <= fs.length; });
+  }
+  render();
+
+  form.addEventListener('change', function(e){
+    var f = e.target.closest ? e.target.closest('fieldset') : null;
+    var i = f ? fs.indexOf(f) : -1;
+    if (i === -1) return;
+    if (i + 2 > shown) { shown = i + 2; render(); }
+  });
 })();
 
 /* --------------------------------------------------------------------------
@@ -187,7 +268,21 @@ var GRUAS = (function(){
   try { stored = localStorage.getItem(KEY); } catch (err) { stored = 'skip'; }
   if (stored) return;
 
-  el.hidden = false;
+  // No lo mostramos sobre el hero: en móvil taparía los botones de contacto,
+  // que son la única razón por la que esta página existe. Aparece recién
+  // cuando el visitante pasó la primera pantalla.
+  var shown = false;
+  function show(){
+    if (shown) return;
+    shown = true;
+    el.hidden = false;
+    window.removeEventListener('scroll', onScroll);
+  }
+  function onScroll(){
+    if (window.scrollY > window.innerHeight * 0.9) show();
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
   el.addEventListener('click', function(e){
     var btn = e.target.closest('[data-consent-choice]');

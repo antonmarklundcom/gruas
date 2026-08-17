@@ -6,7 +6,7 @@
 <title>Grúas en Asunción — Remolque y Asistencia Vial | gruas.com.py</title>
 <meta name="description" content="Grúas, remolque y asistencia vial en Asunción y Gran Asunción. Siniestros, cerrajería de urgencia, cambio de neumáticos y ambulancias privadas. Escribinos por WhatsApp con tu ubicación y te pasamos el precio cerrado antes de salir.">
 <link rel="canonical" href="https://gruas.com.py/">
-<meta name="theme-color" content="#0E0E0F">
+<meta name="theme-color" content="#FBFAF8">
 
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 
@@ -28,12 +28,8 @@
 <link rel="alternate icon" href="/favicon.ico">
 <link rel="manifest" href="/site.webmanifest">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..500&family=Geist:wght@400;500&display=swap">
-<link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..500&family=Geist:wght@400;500&display=swap">
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/geist-latin.woff2" crossorigin>
 
 <link rel="stylesheet" href="/assets/css/site.css">
 
@@ -115,15 +111,24 @@
 
 <main id="contenido">
 
-<!-- ================= §1 HERO — P1 ================= -->
-<section class="hero">
-  <div class="wrap p1 p1--hero">
-    <div class="p1__copy">
+<!-- ================= §1 HERO — foto a sangre + copy encima ================= -->
+<section class="hero hero--media scrim grain">
+  <div class="hero__media">
+    <picture>
+      <source type="image/avif" srcset="/assets/img/grua-remolque-asuncion-noche.avif">
+      <source type="image/webp" srcset="/assets/img/grua-remolque-asuncion-noche.webp">
+      <img src="/assets/img/grua-remolque-asuncion-noche.webp"
+           alt="Grúa de plataforma cargando un vehículo en una calle de Asunción"
+           width="2048" height="878" fetchpriority="high" decoding="async">
+    </picture>
+  </div>
+  <div class="wrap hero__in">
+    <div class="hero__copy">
       <span class="eyebrow">Asunción · Gran Asunción</span>
       <h1>Grúas y asistencia vial en Asunción</h1>
-      <p class="lead">Quedaste en la calle, chocaste o el auto no arranca. Escribinos por WhatsApp con tu ubicación, te pasamos el precio cerrado antes de salir y mandamos la unidad más cercana disponible.</p>
+      <p class="lead">Quedaste en la calle, chocaste o el auto no arranca. Mandanos tu ubicación por WhatsApp y te pasamos el precio cerrado antes de que salga la unidad.</p>
 
-      <ul class="chip-row" style="margin-top:var(--s-8)">
+      <ul class="chip-row" style="margin-top:var(--s-6)">
         <li class="chip">Siniestros</li>
         <li class="chip">Remolque</li>
         <li class="chip">Cerrajería de urgencia</li>
@@ -141,20 +146,8 @@
       </div>
 
       <p class="small" style="margin-top:var(--s-8);margin-bottom:var(--s-2)">Llamá o guardá este número</p>
-      <a href="tel:+595995628862" data-ev="call_click" data-ev-loc="hero-numero"
-         style="font-family:var(--font-display);font-size:var(--t-3);letter-spacing:-.03em;text-decoration:none;display:inline-block">+595 995 628 862</a>
+      <a class="telnum" href="tel:+595995628862" data-ev="call_click" data-ev-loc="hero-numero">+595 995 628 862</a>
       <p class="small" style="margin-top:var(--s-3)">Si no podés hablar, mandá un mensaje. Con la ubicación alcanza.</p>
-    </div>
-
-    <div class="p1__visual">
-      <picture>
-        <source type="image/avif" srcset="/assets/img/grua-remolque-asuncion-noche.avif">
-        <source type="image/webp" srcset="/assets/img/grua-remolque-asuncion-noche.webp">
-        <img src="/assets/img/grua-remolque-asuncion-noche.webp"
-             alt="Grúa de plataforma cargando un vehículo en una calle de Asunción de noche"
-             width="2048" height="878" fetchpriority="high" decoding="async"
-             style="border-radius:var(--r-md);width:100%;object-fit:cover;aspect-ratio:21/9">
-      </picture>
     </div>
   </div>
 </section>
@@ -198,7 +191,7 @@
           <img src="/assets/img/remolque-plataforma-vehiculo.webp"
                alt="Vehículo siendo cargado sobre la plataforma de una grúa"
                width="1024" height="768" loading="lazy" decoding="async"
-               style="border-radius:var(--r-md);margin-bottom:var(--s-6);aspect-ratio:16/9;object-fit:cover;width:100%">
+               class="thumb">
         </picture>
         <h3>Remolque de vehículos</h3>
         <p>Averías en la vía, motor que no arranca, vehículo que no puede circular. Lo levantamos y lo trasladamos al taller, domicilio o concesionaria que nos digas.</p>
@@ -212,7 +205,7 @@
           <img src="/assets/img/auxilio-mecanico-paso-de-corriente.webp"
                alt="Operario conectando cables de arranque a la batería de un vehículo"
                width="1024" height="768" loading="lazy" decoding="async"
-               style="border-radius:var(--r-md);margin-bottom:var(--s-6);aspect-ratio:4/3;object-fit:cover;width:100%">
+               class="thumb">
         </picture>
         <h3>Auxilio mecánico en el lugar</h3>
         <p>Paso de corriente, batería, cambio o inflado de neumáticos y combustible de emergencia. A veces no hace falta remolcar.</p>
@@ -226,7 +219,7 @@
           <img src="/assets/img/cerrajeria-apertura-de-vehiculo.webp"
                alt="Herramienta de cerrajería vehicular abriendo la puerta de un auto"
                width="1024" height="768" loading="lazy" decoding="async"
-               style="border-radius:var(--r-md);margin-bottom:var(--s-6);aspect-ratio:4/3;object-fit:cover;width:100%">
+               class="thumb">
         </picture>
         <h3>Cerrajería de urgencia</h3>
         <p>Apertura de vehículos sin daños. Llaves adentro, cerradura trabada o llave perdida.</p>
@@ -240,7 +233,7 @@
           <img src="/assets/img/siniestro-vial-retiro-de-vehiculo.webp"
                alt="Conos de señalización junto a un vehículo siniestrado antes de ser retirado"
                width="1024" height="768" loading="lazy" decoding="async"
-               style="border-radius:var(--r-md);margin-bottom:var(--s-6);aspect-ratio:4/3;object-fit:cover;width:100%">
+               class="thumb">
         </picture>
         <h3>Siniestros y rescates</h3>
         <p>Remolque y asistencia en accidentes viales. Retiramos el vehículo del lugar, también si quedó empantanado, en zanja o fuera de la calzada.</p>
@@ -254,7 +247,7 @@
           <img src="/assets/img/ambulancia-privada-traslado.webp"
                alt="Ambulancia privada estacionada en la entrada de un sanatorio"
                width="1024" height="768" loading="lazy" decoding="async"
-               style="border-radius:var(--r-md);margin-bottom:var(--s-6);aspect-ratio:4/3;object-fit:cover;width:100%">
+               class="thumb">
         </picture>
         <h3>Ambulancias privadas</h3>
         <p>Traslado de pacientes entre domicilios, sanatorios y centros de estudios.</p>
