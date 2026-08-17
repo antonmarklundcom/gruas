@@ -3,3 +3,4 @@ package-lock.json
 leads.jsonl
 lead-events.jsonl
 qa-body.md
+qa/shots/

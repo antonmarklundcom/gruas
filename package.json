@@ -1,0 +1,11 @@
+{
+  "name": "gruas-com-py",
+  "private": true,
+  "description": "Sitio estático de gruas.com.py. Sin build: el HTML se despliega tal cual. Playwright existe sólo para el arnés de render de qa/.",
+  "scripts": {
+    "qa": "node qa/render.js check"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}
