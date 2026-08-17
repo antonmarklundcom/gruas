@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 """
 Konverterar Higgsfield-PNG:erna till AVIF + WebP på de exakta sökvägar som
-HTML:en redan är wire:ad mot.
+HTML:en är wire:ad mot.
 
-Källfiler läggs i assets/img/raw/ (git-ignorerade). Filnamnet spelar ingen roll
-så länge det innehåller antingen slugen eller Higgsfield-jobb-id:t — dvs både
-"grua-remolque-asuncion-noche.png" och det namn webbläsaren ger,
-"hf_20260806_111528_3a9dbff3-6dc7-456f-bcac-11e419451bf6.png", funkar.
+Källfiler ligger i assets/img/raw/. Filnamnet spelar ingen roll så länge det
+innehåller antingen slugen eller Higgsfield-jobb-id:t — dvs både
+"remolque-plataforma-carga-de-auto.png" och namnet webbläsaren ger,
+"hf_20260817_105603_6a172819-...png", funkar.
 
 Målstorlekarna läses ur HTML:ens width/height-attribut, så filerna får exakt
 den intrinsiska storlek sidorna deklarerar (noll CLS). Bilden center-croppas
-till målets aspect ratio innan skalning, så inget sträcks ut.
+till målets aspect ratio innan skalning, så inget sträcks ut. CROP_BIAS låter
+en enskild slug flytta croppen från mitten när motivet inte sitter centrerat.
 
     pip install pillow pillow-avif-plugin
     python3 tools/build-images.py
 
 Kör med --check för att bara rapportera vad som saknas.
+
+VIKTIGT om cache: .htaccess cachar bilder ett år och <img> har ingen ?v=.
+Byter du MOTIV på en slug måste du byta SLUG också, annars får återvändande
+besökare kvar den gamla bilden. Därför är slugarna beskrivande — en ny bild
+är en ny slug.
 """
 
 import re
@@ -31,18 +37,22 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(ROOT, "assets", "img", "raw")
 OUT = os.path.join(ROOT, "assets", "img")
 
-# slug -> Higgsfield job id (samma tabell som IMAGE-PROMPTS.md)
+# slug -> Higgsfield job id. Se IMAGE-PROMPTS.md för prompts och urval.
 JOB_IDS = {
-    "grua-remolque-asuncion-noche": "3a9dbff3-6dc7-456f-bcac-11e419451bf6",
-    "grua-en-ruta-balizas-noche": "47743f6c-b261-4aa6-a030-bd9c8caf84fe",
+    # 2026-08-17-omgången (dagsljus, människor i bild, textfria västar/dörrar)
+    "grua-plataforma-cargando-auto-asuncion": "b22a19e4-352b-4862-96d0-34cec8d2b6f6",
+    "remolque-plataforma-carga-de-auto": "6a172819-5e21-4e69-b7e0-eee3609f8347",
+    "auxilio-mecanico-arranque-con-cables": "057e760d-b2ce-485e-a9f7-d77180561e92",
+    "cerrajeria-apertura-de-puerta-de-auto": "0d329fcb-1be7-4748-ab11-06676eac38f5",
+    "siniestro-vial-auto-danado-en-plataforma": "e068eb67-fe03-42e2-b1c9-c3ed51a7864c",
+    "auto-parado-en-la-banquina-de-la-ruta": "87671de4-5b6f-4d4d-809f-22cd525a4d32",
+    # 2026-08-06-omgången, de två slots den nya omgången inte täcker
     "gran-asuncion-grua-circulando": "36624198-025c-436f-86dd-dcf28048f176",
-    "remolque-plataforma-vehiculo": "3c01be81-0dd5-47cb-a4c0-d88d65926125",
-    "auxilio-mecanico-paso-de-corriente": "69410f8b-829c-4169-8d64-a7e695a5a66d",
-    "cerrajeria-apertura-de-vehiculo": "78548541-312b-47da-a7d1-94e3c3cd0dd1",
-    "siniestro-vial-retiro-de-vehiculo": "3754da75-e567-49ad-bf1a-5eab2020dfee",
     "ambulancia-privada-traslado": "0e215751-0a94-4723-96a1-6c6cc9e29a0e",
-    "operador-coordinando-servicio": "000d190b-c2fa-4fa8-b573-b5f627570a0a",
 }
+
+# slug -> (x_bias, y_bias) i 0..1. 0.5 = centrerad crop (standard).
+CROP_BIAS = {}
 
 AVIF_QUALITY = 55
 WEBP_QUALITY = 82
@@ -53,6 +63,8 @@ def declared_sizes():
     används i flera format."""
     found = defaultdict(set)
     for path in glob.glob(os.path.join(ROOT, "**", "*.html"), recursive=True):
+        if "node_modules" in path:
+            continue
         src = open(path, encoding="utf8").read()
         for m in re.finditer(
             r'<img[^>]*?src="/assets/img/([a-z0-9-]+)\.webp"[^>]*?>', src, re.S
@@ -76,15 +88,18 @@ def find_source(slug):
     return None
 
 
-def cover_resize(im, tw, th):
-    """Center-croppa till målets ratio, skala sedan till exakt (tw, th)."""
+def cover_resize(im, tw, th, bias=(0.5, 0.5)):
+    """Croppa till målets ratio (bias styr var), skala sedan till (tw, th)."""
     sw, sh = im.size
+    bx, by = bias
     if sw / sh > tw / th:
         new_w = round(sh * tw / th)
-        box = ((sw - new_w) // 2, 0, (sw - new_w) // 2 + new_w, sh)
+        x = round((sw - new_w) * bx)
+        box = (x, 0, x + new_w, sh)
     else:
         new_h = round(sw * th / tw)
-        box = (0, (sh - new_h) // 2, sw, (sh - new_h) // 2 + new_h)
+        y = round((sh - new_h) * by)
+        box = (0, y, sw, y + new_h)
     return im.resize((tw, th), Image.LANCZOS, box=box)
 
 
@@ -111,7 +126,7 @@ def main():
 
         with Image.open(src) as im:
             im = im.convert("RGB")
-            out = cover_resize(im, tw, th)
+            out = cover_resize(im, tw, th, CROP_BIAS.get(slug, (0.5, 0.5)))
             avif = os.path.join(OUT, f"{slug}.avif")
             webp = os.path.join(OUT, f"{slug}.webp")
             out.save(avif, "AVIF", quality=AVIF_QUALITY)

@@ -24,8 +24,24 @@ upp hit.
 
 ## Vilka bilder
 
-Nio genereringar finns i Higgsfield-historiken (2026-08-06). **Åtta av dem är
-wire:ade i HTML:en** — `operador-coordinando-servicio` är specad i
-BUILD-SPEC-v2.md men används inte på någon sida ännu, så den är valfri.
+Här ligger båda omgångarna: nio PNG från 2026-08-06 och åtta från 2026-08-17.
+Åtta av dem fyller sajtens bildslots, sex från den nyare omgången och två från
+den äldre. Resten ligger kvar som källmaterial.
 
-Fullständig tabell med prompts och jobb-id: se `IMAGE-PROMPTS.md` i repo-roten.
+Fullständig tabell med prompts, jobb-id och **vilka som refuserades och varför**:
+se `IMAGE-PROMPTS.md` i repo-roten.
+
+## Innan du wire:ar en ny bild
+
+Titta på den i full upplösning först, inte bara som miniatyr. Zooma in på
+**lastbilsdörrar, västar, skyltar och nummerplåtar**. Bildmodellerna målar dit
+påhittad firmabranding och telefonnummerliknande sifferrader som inte syns
+förrän man förstorar. Ett falskt telefonnummer på en bogseringssajt är aktivt
+skadligt — beskär bort det eller släng bilden. Två genereringar från 2026-08-17
+föll på just det.
+
+## Byter du motiv — byt slug
+
+`.htaccess` cachar bilder ett år och `<img>`-taggarna har ingen `?v=`. Skriver
+du ett nytt motiv till en befintlig slug får återvändande besökare kvar den
+gamla bilden i upp till ett år. Ny bild = nytt filnamn.
