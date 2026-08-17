@@ -80,4 +80,7 @@
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
+  <url><loc>https://gruas.com.py/servicios/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://gruas.com.py/zonas/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://gruas.com.py/nosotros/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
