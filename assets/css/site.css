@@ -174,7 +174,6 @@ strong{font-weight:600;color:var(--ink)}
 .wrap{max-width:var(--container);margin-inline:auto;padding-inline:var(--gutter)}
 .bleed{width:100%;position:relative}
 section{padding-block:clamp(2.9rem,7.5vw,var(--s-32));position:relative}
-.section--tight{padding-block:clamp(var(--s-12),5vw,var(--s-16))}
 
 img{max-width:100%;height:auto;display:block}
 
@@ -208,7 +207,6 @@ img{max-width:100%;height:auto;display:block}
 .card--bare{padding-inline:0}
 .card--hair{border:1px solid var(--hairline);background:var(--surface)}
 .card--raised{background:var(--surface);box-shadow:var(--shadow-1);border:1px solid color-mix(in srgb,var(--ink) 6%,transparent)}
-.card--sunken{background:var(--sunken)}
 .card--ink{background:var(--ink);color:var(--base)}
 .card--ink h3,.card--ink h4{color:var(--base)}
 .card--ink p,.card--ink .small{color:color-mix(in srgb,#F7F5F2 74%,transparent)}
@@ -352,37 +350,12 @@ img{max-width:100%;height:auto;display:block}
 body.menu-abierto{overflow:hidden}
 
 /* ==========================================================================
-   HERO a sangre — foto de fondo, copy encima
+   HERO
+   .hero es sólo un contenedor: las subpáginas lo usan como sección normal
+   sobre papel claro. El hero de la home es .hero--split, a dos columnas.
    ========================================================================== */
-/* .hero es sólo un contenedor: las subpáginas lo usan como sección normal
-   sobre papel claro. El tratamiento a sangre con foto vive en .hero--media,
-   que es el único que oscurece el fondo. */
 .hero{position:relative}
-.hero--media{overflow:hidden;background:var(--ink);isolation:isolate}
-.hero__media{position:absolute;inset:0;z-index:0}
-.hero__media img{width:100%;height:100%;object-fit:cover;object-position:50% 55%}
-.hero__in{
-  position:relative;z-index:2;
-  padding-block:clamp(var(--s-16),13vw,var(--s-32));
-  color:#F7F5F2;
-}
-.hero__in h1{color:#fff;max-width:15ch}
-.hero__in .lead{color:color-mix(in srgb,#fff 86%,transparent);max-width:48ch}
-.hero__in .eyebrow{color:#FFA184}
-.hero__in .eyebrow::before{background:#FF7A4D}
-.hero__in .small{color:color-mix(in srgb,#fff 68%,transparent)}
-.hero__in .telnum{color:#fff}
-.hero__in .telnum:hover{color:#FFA184}
-.hero__copy{max-width:660px}
-@media (min-width:1024px){
-  .hero__in{
-    padding-block:var(--s-16);
-    min-height:min(86vh,820px);display:flex;align-items:center;
-  }
-}
 
-/* Hero claro con foto en columna propia. La foto ocupa altura real para que
-   la grúa se lea de inmediato, sin robarle sitio a los botones en el móvil. */
 .hero--split{padding-block:clamp(var(--s-8),4vw,var(--s-16))}
 .hero__photo{
   width:100%;object-fit:cover;border-radius:var(--r-md);
@@ -677,8 +650,6 @@ body.menu-abierto{overflow:hidden}
   padding:0 var(--s-4);border-radius:100px;
   border:1px solid var(--hairline-strong);font-size:var(--t--1);font-weight:500;
 }
-.hero__in .chip{border-color:color-mix(in srgb,#fff 34%,transparent);color:#fff;
-  background:color-mix(in srgb,#000 22%,transparent);backdrop-filter:blur(4px)}
 .ticks{list-style:none;margin:0 0 var(--s-6);padding:0;display:grid;gap:var(--s-3);max-width:var(--measure)}
 .ticks li{padding-left:var(--s-8);position:relative;color:var(--ink-70)}
 .ticks li::before{
