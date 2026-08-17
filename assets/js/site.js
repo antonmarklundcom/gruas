@@ -153,6 +153,38 @@ var GRUAS = (function(){
 })();
 
 /* --------------------------------------------------------------------------
+   3.4 Menú móvil. Sin JS el panel queda oculto y la navegación completa
+      sigue estando en el pie, así que no se pierde ningún enlace.
+   -------------------------------------------------------------------------- */
+(function(){
+  var btn  = document.querySelector('[data-menu-toggle]');
+  var menu = document.querySelector('[data-menu]');
+  if (!btn || !menu) return;
+
+  function set(open){
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('menu-abierto', open);
+  }
+
+  btn.addEventListener('click', function(){
+    set(menu.hidden);
+  });
+
+  // Cerrar al elegir un destino o al apretar Escape.
+  menu.addEventListener('click', function(e){
+    if (e.target.closest('a')) set(false);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && !menu.hidden) { set(false); btn.focus(); }
+  });
+  // Si la ventana pasa a escritorio, el panel no debe quedar bloqueando scroll.
+  window.addEventListener('resize', function(){
+    if (window.innerWidth >= 1024 && !menu.hidden) set(false);
+  });
+})();
+
+/* --------------------------------------------------------------------------
    3.5 Cotizador por pasos — mejora progresiva.
       Sin JS se ven las tres preguntas de una vez y el formulario funciona
       igual. Con JS mostramos una por vez: la página se acorta muchísimo en

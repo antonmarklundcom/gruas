@@ -289,14 +289,67 @@ img{max-width:100%;height:auto;display:block}
   font-family:var(--font-display);font-size:var(--t-1);font-weight:700;
   letter-spacing:-.03em;text-decoration:none;color:var(--ink);margin-right:auto;
 }
-.hdr__nav{display:none;gap:var(--s-6)}
-.hdr__nav a{text-decoration:none;color:var(--ink-70);font-size:var(--t-0);font-weight:500}
+.hdr__nav{display:none;gap:var(--s-6);margin-left:auto}
+.hdr__nav a{
+  text-decoration:none;color:var(--ink-70);font-size:var(--t-0);font-weight:500;
+  position:relative;padding-block:var(--s-2);
+}
 .hdr__nav a:hover{color:var(--ink)}
+.hdr__nav a[aria-current="page"]{color:var(--ink);font-weight:600}
+.hdr__nav a[aria-current="page"]::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);
+}
 .hdr__tel{display:none;text-decoration:none;font-weight:600;white-space:nowrap}
 @media (min-width:1024px){
   .hdr__nav{display:flex}
   .hdr__tel{display:inline-flex;align-items:center;gap:var(--s-2);min-height:46px}
 }
+
+/* ---- botón hamburguesa: arriba a la derecha, sólo en móvil ---- */
+.burger{
+  display:flex;align-items:center;justify-content:center;
+  width:48px;height:48px;margin-left:auto;flex:none;
+  background:transparent;border:1px solid var(--hairline-strong);
+  border-radius:var(--r-sm);cursor:pointer;padding:0;color:var(--ink);
+}
+.burger__box{display:block;width:20px;height:14px;position:relative}
+.burger__box span{
+  position:absolute;left:0;right:0;height:2px;background:currentColor;border-radius:2px;
+  transition:transform var(--dur) var(--ease-io),opacity var(--dur-fast) var(--ease-io);
+}
+.burger__box span:nth-child(1){top:0}
+.burger__box span:nth-child(2){top:6px}
+.burger__box span:nth-child(3){top:12px}
+.burger[aria-expanded="true"] .burger__box span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.burger[aria-expanded="true"] .burger__box span:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] .burger__box span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+@media (min-width:1024px){.burger{display:none}}
+
+/* ---- panel de navegación móvil ---- */
+.mnav{
+  border-top:1px solid var(--hairline);
+  background:var(--base);
+  max-height:calc(100dvh - 70px);overflow-y:auto;
+  padding-bottom:var(--s-8);
+}
+.mnav[hidden]{display:none}
+.mnav__nav{display:grid;padding-top:var(--s-2)}
+.mnav__nav a{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:58px;text-decoration:none;
+  border-bottom:1px solid var(--hairline);
+  font-family:var(--font-display);font-weight:700;font-size:var(--t-1);
+  letter-spacing:-.022em;color:var(--ink);
+}
+.mnav__nav a::after{
+  content:"";width:8px;height:8px;flex:none;
+  border-top:2px solid var(--accent);border-right:2px solid var(--accent);
+  transform:rotate(45deg);
+}
+.mnav__nav a[aria-current="page"]{color:var(--accent-text)}
+.mnav__cta{display:grid;gap:var(--s-3);margin-top:var(--s-6)}
+@media (min-width:1024px){.mnav{display:none}}
+body.menu-abierto{overflow:hidden}
 
 /* ==========================================================================
    HERO a sangre — foto de fondo, copy encima
@@ -326,6 +379,21 @@ img{max-width:100%;height:auto;display:block}
     padding-block:var(--s-16);
     min-height:min(86vh,820px);display:flex;align-items:center;
   }
+}
+
+/* Hero claro con foto en columna propia. La foto ocupa altura real para que
+   la grúa se lea de inmediato, sin robarle sitio a los botones en el móvil. */
+.hero--split{padding-block:clamp(var(--s-8),4vw,var(--s-16))}
+.hero__photo{
+  width:100%;object-fit:cover;border-radius:var(--r-md);
+  aspect-ratio:4/3;box-shadow:var(--shadow-1);
+}
+@media (min-width:1024px){
+  .hero--split .p1{grid-template-columns:55fr 45fr;align-items:center}
+  .hero__photo{aspect-ratio:5/6;max-height:640px}
+}
+@media (max-width:1023px){
+  .hero__photo{aspect-ratio:16/9}
 }
 
 /* ==========================================================================
@@ -623,6 +691,13 @@ img{max-width:100%;height:auto;display:block}
 .p3__wide .thumb{aspect-ratio:2/1}
 @media (min-width:1024px){.p3__wide .thumb{aspect-ratio:21/9}}
 .rule{height:1px;background:var(--hairline);border:0;margin:0}
+
+/* Banda hundida: separa una sección sin recurrir al fondo oscuro. En este
+   sitio lo único oscuro es el hero, que lo necesita para leer sobre la foto. */
+.sunken{
+  background:var(--sunken);
+  border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);
+}
 
 /* Lista de zonas: tipográfica, con filete. Nunca un mapa decorativo. */
 .zonelist{list-style:none;margin:0;padding:0;border-top:1px solid var(--hairline)}
