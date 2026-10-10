@@ -1,7 +1,7 @@
 <?php
 // Reenvía leads del formulario a venderCRM.
-// La API key NUNCA vive en este archivo: viene de la variable de entorno
-// VENDERCRM_API_KEY configurada en hPanel. Nunca llamar al CRM desde JS.
+// La API key NUNCA vive en este archivo: usar configuración privada del servidor
+// VENDERCRM_URL + VENDERCRM_API_KEY. Nunca llamar al CRM desde JS.
 //
 // Mientras venderCRM no esté disponible (sin API key, o si el CRM responde
 // con error) el lead se guarda igual en leads.jsonl para no perder ninguno.
@@ -37,25 +37,45 @@ $stored = @file_put_contents(
 );
 
 // ---- envío al CRM (solo si ya está configurado) ----
-$apiKey  = getenv('VENDERCRM_API_KEY');
-$sentOk  = false;
+$sentOk = false;
+$crm = null;
 
-if (!empty($apiKey)) {
-    $ch = curl_init('https://{CRM_DOMAIN}/api/v1/leads');
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 10,
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'X-Api-Key: ' . $apiKey,
-        ],
-        CURLOPT_POSTFIELDS => json_encode($lead),
-    ]);
-    curl_exec($ch);
-    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $sentOk = ($status >= 200 && $status < 300);
+try {
+    if (is_file(__DIR__ . '/lib/vendercrm-config.php')) {
+        require_once __DIR__ . '/lib/vendercrm-config.php';
+        $crm = \VenderCRM\Config::load(__DIR__);
+    }
+} catch (\Throwable $error) {
+    // Configuration failures never expose credentials or prevent local receipt.
+    $crm = null;
+}
+
+if ($crm !== null && function_exists('curl_init')) {
+    $ch = null;
+    try {
+        $ch = curl_init($crm->endpoint());
+        if ($ch !== false && curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'X-Api-Key: ' . $crm->apiKey(),
+            ],
+            CURLOPT_POSTFIELDS => json_encode($lead),
+        ])) {
+            $response = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $sentOk = ($response !== false && curl_errno($ch) === 0 && $status >= 200 && $status < 300);
+        }
+    } catch (\Throwable $error) {
+        // A transport failure leaves the saved local lead available.
+        $sentOk = false;
+    } finally {
+        if ($ch !== null && $ch !== false) {
+            try { curl_close($ch); } catch (\Throwable $error) { /* keep local receipt */ }
+        }
+    }
 }
 
 // El lead cuenta como recibido si quedó guardado localmente o si el CRM lo aceptó.
