@@ -69,3 +69,6 @@ RedirectMatch 404 /\.git
   Header set X-Content-Type-Options "nosniff"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# CRM helper, test harness and technical documentation are internal.
+RedirectMatch 404 ^/(?:lib|tests|docs)/
