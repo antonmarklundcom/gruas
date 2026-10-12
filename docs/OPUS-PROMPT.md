@@ -1,59 +1,76 @@
-# Prompt for Opus 5.5 — implement the gruas.com.py improvements
+# Prompt for Opus 5.5 (high) — implement the gruas.com.py improvements
 
-Copy everything below the line into a new Claude Code session on repo `antonmarklundcom/gruas`. Delete any numbered item you do not want done; the numbering matches `docs/IMPROVEMENT-REPORT.md`.
+Copy everything below the line into a new Claude Code session on repo `antonmarklundcom/gruas`, model Opus 5.5, effort high. Delete any numbered item you do not want done; the numbering matches `docs/IMPROVEMENT-REPORT.md`.
 
 ---
 
 Repo: `antonmarklundcom/gruas`, branch from `main`. This is the static HTML + PHP site for gruas.com.py (tow trucks, Asunción, Paraguay). There is no build step: the HTML is deployed as-is to Hostinger `public_html` via Git. Playwright exists only for the QA harness in `qa/`.
 
-**Read first:** `docs/IMPROVEMENT-REPORT.md` (the full rationale for every item below), `qa/README.md`, `.htaccess`, `lead-forward.php`, `lead-event.php`, `lib/vendercrm-config.php`, `tests/vendercrm-config.cjs`, `assets/js/site.js`.
+You are the orchestrator. You do the foundation work yourself (Phase 1), then fan out the independent phases to **Sonnet 5.5 subagents** running in parallel, each in its own git worktree and owning its own files. You review every subagent diff before it is pushed. Never use a Fable or Mythos model for any subagent or spawned session.
 
-**Rules:**
-- Site copy is Spanish (es-PY, voseo: "mandanos", "escribinos"). Do not change tone or claims. The site never publishes prices.
-- Do not add a build step that the HTML depends on. Scripts in `tools/` may generate or verify files, but the committed HTML must stay deployable as-is.
+**Read first (you, not a subagent):** `docs/IMPROVEMENT-REPORT.md` (rationale for every item), `qa/README.md`, `.htaccess`, `package.json`, `lead-forward.php`, `lead-event.php`, `lib/vendercrm-config.php`, `tests/vendercrm-config.cjs`, `assets/js/site.js`, and the `<head>` plus header/footer of `index.html`.
+
+## Rules (also paste these into every subagent prompt)
+
+- Site copy is Spanish (es-PY, voseo: "mandanos", "escribinos"). Do not change tone or claims. The site never publishes prices or response-time promises beyond what the home page already says.
+- No build step that the HTML depends on. Scripts in `tools/` may generate or verify files, but the committed HTML must stay deployable as-is.
 - No GitHub Actions workflows. Everything runs locally via `npm` scripts.
-- Keep `.htaccess` protections for `*.jsonl`, `*.md`, `qa/`, `lib/`, `tests/`, `docs/` intact.
+- Keep the `.htaccess` protections for `*.jsonl`, `*.md`, `qa/`, `lib/`, `tests/`, `docs/` intact.
 - Never commit secrets. The CRM key lives outside the web root (see `lib/vendercrm-config.php`).
-- Work in small PRs grouped as below, one PR per group. Run `npm test` and `npm run qa` before each push and paste the output in the PR description. Do not merge; I will review.
-- Do not touch `assets/img/raw/*.png` content and do not regenerate the AVIF/WebP images.
+- Do not modify or regenerate the AVIF/WebP images or the raw PNGs' content.
+- Language convention: Spanish for site-facing code and comments (HTML, CSS, `site.js`, the two PHP endpoints), English for tooling and docs (`tools/`, `qa/*.js`, `tests/`, `docs/`, README).
+- Before every push: `npm run check` (defined in Phase 1) must pass and its output goes in the PR body. Do not merge. I review and merge.
+- One PR per phase, branch `claude/gruas-<phase>-<short-name>`, English title, body lists the item numbers covered.
 
-## PR A — hygiene and safety (items 1, 3, 4, 5, 7, 16, 17)
+## Phase 1 — foundation (you, Opus, sequential). Items 1, 2, 3, 4, 5, 7, 16, 17, 23
 
-1. **Raw PNGs out of the deploy path.** Add `assets/img/raw/*.png` to `.gitignore`, `git rm --cached` the 17 PNGs, and update `assets/img/raw/README.md` to say where the originals live (leave a `TODO: link` for me to fill). Also add to `.htaccess` a `RedirectMatch 404 ^/assets/img/raw/` as belt and braces.
-3. **Contact number as a single source of truth.** Create `tools/check-contact.js`: read `WA_NUMBER` from `assets/js/site.js`, then fail if any `.html` contains a `wa.me/` or `tel:` with a different number, or if the JSON-LD `telephone` differs. Create `tools/set-number.js <newNumber>` that rewrites all occurrences (HTML, JSON-LD, `site.js`, the fallback text in `site.js` section 6). Wire as `npm run check:contact`.
-4. **Clean the root.** Move `BUILD-SPEC-v2.md` and `IMAGE-PROMPTS.md` to `docs/`. Delete `HANDOFF-PR3-5.md` (its work is merged). Delete `qa-preflight.md` and remove it from `.gitignore` (it is a stale run report). Fix any links to the moved files in `qa/README.md`, `tools/build-images.py`, `qa/qa.js`.
-5. **README.md and CLAUDE.md.** `README.md` (English, about 40 lines): what the site is, no build step, how to run locally (`python3 -m http.server 8899`), `npm install`, `npm test`, `npm run qa`, images via `tools/build-images.py`, deploy = push to main (Hostinger pulls), where the CRM config lives, where leads are stored. `CLAUDE.md`: point to README, list the rules in this prompt's **Rules** section, and the language convention (Spanish for site-facing code and comments, English for tooling and docs).
-7. **npm scripts.** In `package.json` add: `"test": "node tests/vendercrm-config.cjs"`, `"lint:php": "php -l lead-forward.php && php -l lead-event.php && php -l lib/vendercrm-config.php"`, `"check:contact"`, `"check": "npm run lint:php && npm test && npm run check:contact && npm run qa"`.
-16. **Security headers.** In `.htaccess` under `mod_headers` add: `Strict-Transport-Security "max-age=31536000; includeSubDomains"`, `X-Frame-Options "DENY"`, `Permissions-Policy "camera=(), microphone=(), geolocation=()"`, and a CSP: `default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me; base-uri 'self'; frame-ancestors 'none'`. To make `script-src 'self'` and `style-src 'self'` hold, do item 23 (move the inline styles from `404.html`, `gracias.html`, `politica-de-privacidad.html` into `site.css`) and move the inline `<script>` in `gracias.html` into `site.js` as a section that runs only when `[data-gracias]` is present. Confirm with `npm run qa` that no page logs a CSP violation (extend `qa/render.js` to fail on `securitypolicyviolation` console messages). Bump the `?v=` cache string on all 24 pages (use a script, verify all 24 match).
-17. **Single-hop redirect.** Replace the two rewrite rules with one that sends any `http://` or `www.` request straight to `https://gruas.com.py/$1` in one 301.
+This phase touches shared files (`.htaccess`, `package.json`, `site.css`, all 24 HTML heads, the cache string), so it goes first and alone. Open it as PR A and wait for my merge before starting Phase 2, because the other phases rebase on it.
 
-## PR B — lead endpoints (items 10, 11, 12, 13, 14, 15)
+1. **Raw PNGs out of the deploy path.** Add `assets/img/raw/*.png` to `.gitignore`, `git rm --cached` the 17 PNGs, update `assets/img/raw/README.md` to say the originals live off-repo (leave `TODO: link` for me). Add `RedirectMatch 404 ^/assets/img/raw/` to `.htaccess`.
+2. **Header/footer drift check.** `tools/check-partials.js`: extract `<header …>…</header>` and `<footer …>…</footer>` from every `.html` (24 pages, exclude nothing), normalise by stripping `aria-current="page"`, and fail if any page differs from `index.html`. Print a unified diff for the first offender. Wire as `npm run check:partials`. If it finds existing drift, fix the drifted pages so they match `index.html` (keep each page's own `aria-current`).
+3. **Contact number single source of truth.** `tools/check-contact.js`: read `WA_NUMBER` from `assets/js/site.js`; fail if any `.html` has a `wa.me/` or `tel:` with a different number, or a JSON-LD `telephone` that differs. `tools/set-number.js <digits>`: rewrites all occurrences (HTML `wa.me`, `tel:`, visible `+595 995 628 862` text, JSON-LD, `site.js` constant and the fallback text in `site.js` section 6). Wire as `npm run check:contact`.
+4. **Clean the root.** Move `BUILD-SPEC-v2.md` and `IMAGE-PROMPTS.md` to `docs/`. Delete `HANDOFF-PR3-5.md` (merged work). Delete `qa-preflight.md` and remove it from `.gitignore`. Fix references in `qa/README.md`, `tools/build-images.py`, `qa/qa.js`.
+5. **README.md and CLAUDE.md.** `README.md` (English, about 40 lines): what the site is, no build step, local run (`python3 -m http.server 8899`), `npm install`, `npm test`, `npm run qa`, `npm run check`, images via `tools/build-images.py`, deploy = push to `main` (Hostinger pulls), where CRM config and lead files live. `CLAUDE.md`: point to README, repeat the Rules above, and the language convention.
+7. **npm scripts.** Add to `package.json`: `"test": "node tests/vendercrm-config.cjs"`, `"lint:php": "php -l lead-forward.php && php -l lead-event.php && php -l lib/vendercrm-config.php"`, `"check:partials"`, `"check:contact"`, `"check": "npm run lint:php && npm test && npm run check:partials && npm run check:contact && npm run qa"`.
+16. **Security headers + CSP.** In `.htaccess` under `mod_headers` add `Strict-Transport-Security "max-age=31536000; includeSubDomains"`, `X-Frame-Options "DENY"`, `Permissions-Policy "camera=(), microphone=(), geolocation=()"`, and `Content-Security-Policy "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; form-action 'self' https://wa.me; base-uri 'self'; frame-ancestors 'none'"`. For `script-src 'self'` to hold, move the inline `<script>` in `gracias.html` (around line 49) into `site.js` as a section that runs only when `[data-gracias]` exists on the page. JSON-LD blocks are not executed and are unaffected. Extend `qa/render.js` to fail on `securitypolicyviolation` events and on console errors mentioning CSP, then run it.
+17. **Single-hop redirect.** Replace the two rewrite rules with one that sends any `http://` or `www.` request to `https://gruas.com.py/$1` in a single 301.
+23. **Inline styles into site.css.** Move the `<style>` blocks from `404.html`, `gracias.html`, `politica-de-privacidad.html` into `assets/css/site.css` (scoped by a page class on `<body>`), so `style-src 'self'` holds. Bump the `?v=` cache string on all 24 pages with a script, then verify all 24 match.
 
-10. **Abuse protection on `lead-forward.php`.** (a) Reject with 403 when `Origin` or `Referer` is present and its host is not `gruas.com.py` or `www.gruas.com.py` (allow when both headers are absent so non-JS form posts from old browsers still work). (b) Per-IP throttle: `sha256(ip + date('YmdHi'))` as a key in `sys_get_temp_dir()/gruas-rl/`, max 5 submissions per minute per IP, respond 429. (c) Add a hidden `t` field set by `site.js` to `Date.now()` on load; reject with 204 when the form was submitted in under 3 seconds (bots). The no-JS path must still work: treat a missing `t` as pass.
-11. **Validate phone and email.** Normalize phone: strip everything except digits and leading `+`; convert `09xxxxxxxx` to `+5959xxxxxxxx`; require 8 to 15 digits, else 400 with a JSON message the form can show. Email: `FILTER_VALIDATE_EMAIL`, drop to `null` if invalid. Update the `site.js` error text to show the server message when present.
-12. **Move JSONL out of the web root.** Add a small helper (in `lib/`) `leads_dir()` that returns `dirname(__DIR__) . '/private/leads'` if it exists and is writable, else `__DIR__`. Use it in both PHP endpoints. Document in README and `docs/VENDERCRM-CONFIGURATION.md`.
-13. **Harden `lead-event.php`.** Same origin check as item 10a, same per-IP throttle (max 30/min), and write to `lead-events-YYYY-MM.jsonl` (monthly rotation) in `leads_dir()`.
-14. **Lead report tool.** `tools/lead-report.php` (CLI): reads all `lead-events-*.jsonl` and `leads.jsonl`, prints a monthly table per event type (whatsapp_click, call_click, calc_submit, form_submit), then breakdowns by `zona`, by `page`, and by `utm_campaign`. Accept `--month=2026-10`. Add `"report": "php tools/lead-report.php"` to `package.json`.
-15. **Tests.** Extend `tests/vendercrm-config.cjs` or add `tests/lead-handlers.cjs` covering: honeypot (204), empty phone (400), invalid phone (400), `09` normalization, foreign Origin (403), throttle (6th request 429), non-AJAX redirect to `/gracias.html`, `lead-event.php` whitelist and monthly file name. Keep the existing PHP `-n` stub approach; no network.
+Run `npm run check`, open PR A, stop and tell me. Continue to Phase 2 only after PR A is merged.
 
-## PR C — SEO plumbing (items 18, 21, 22, 24)
+## Phase 2 — parallel Sonnet 5.5 subagents (after PR A merges)
 
-18. **Generated sitemap.** `tools/build-sitemap.js`: walk all `index.html` plus the three root `.html` pages (exclude `404.html`, `gracias.html`), emit `<loc>` and `<lastmod>` from `git log -1 --format=%cI -- <file>`. Keep current priorities by folder (home 1.0, servicios/cotizador 0.9, zonas/nosotros 0.8, contacto 0.7, FAQ 0.6, guias 0.5, privacidad 0.2). Replace `sitemap.xml` with its output and add `"sitemap": "node tools/build-sitemap.js"` to scripts. Add a check to `npm run check` that fails if the committed sitemap is stale.
-21. **Image loading attributes.** Every `<img>` that is not the first image on the page gets `loading="lazy" decoding="async"`; the first image on each page gets `fetchpriority="high"` and no `loading="lazy"`. Add a check in `qa/render.js`.
-22. **Consent banner.** Remove the banner markup from all pages and section 5 of `site.js`, since nothing third-party is loaded. Leave a comment block in `site.js` describing how to re-add it gated analytics loading when GA4/GTM is introduced. Update `politica-de-privacidad.html` only if it references the banner by name.
-24. **Manifest.** Set `theme_color` to `#FBFAF8` and `background_color` to `#FBFAF8` to match the pages. Generate `assets/img/icon-192.png` and `assets/img/icon-512.png` from `favicon.svg` (use `tools/build-og.py` conventions or Pillow) and list them in `site.webmanifest`.
+Spawn three Sonnet 5.5 subagents at once, each with `isolation: "worktree"`, each branching from the merged `main`. Give each one: the Rules block, its item list below verbatim, the report file path, and the instruction to run `npm run check` before reporting back. They do not push. When each returns, you review its diff adversarially (CSP still holds? no-JS form path still works? Spanish copy untouched?), run `npm run check` yourself in that worktree, fix anything small, then push and open the PR.
 
-## PR D — QA harness (items 6, 8, 9)
+### Subagent B — lead endpoints (items 10, 11, 12, 13, 14, 15). Owns: `lead-forward.php`, `lead-event.php`, `lib/*.php` (new helper only), `tests/*.cjs`, `tools/lead-report.php`, the form error text in `assets/js/site.js` section 6, `docs/VENDERCRM-CONFIGURATION.md`.
 
-6. Remove the hardcoded `/home/user/gruas` and `8899` from `qa/qa.js`: use `path.resolve(__dirname, '..')` and `process.env.BASE || 'http://localhost:8899'`. Make `qa.js` start its own static server like `render.js` does (reuse the server code). Add `"qa:spec": "node qa/qa.js"` to scripts.
-8. Standardize on the `playwright` package already in `devDependencies`; update `qa/README.md` accordingly and remove the `playwright-core` instructions.
-9. Rewrite `qa/README.md` in one language (Spanish, matching `render.js`). Translate Swedish comments in `tools/build-images.py` and `site.js` to Spanish; leave English where the file is tooling (`qa/*.js`, `tests/*.cjs`).
+10. **Abuse protection on `lead-forward.php`.** (a) 403 when `Origin` or `Referer` is present and its host is not `gruas.com.py` / `www.gruas.com.py`; allow when both are absent. (b) Per-IP throttle: key `sha256(ip . date('YmdHi'))` under `sys_get_temp_dir() . '/gruas-rl/'`, max 5 per minute, respond 429. (c) Hidden field `t` set by `site.js` to `Date.now()` on load; respond 204 silently when submitted under 3 seconds; a missing `t` passes (no-JS path).
+11. **Validate phone and email.** Phone: keep digits and a leading `+`; convert `09xxxxxxxx` to `+5959xxxxxxxx`; require 8 to 15 digits else 400 with `{"ok":false,"error":"phone"}`. Email: `FILTER_VALIDATE_EMAIL`, set to `null` when invalid. `site.js` shows a Spanish message for `error: "phone"`.
+12. **JSONL out of the web root.** New `lib/leads-dir.php` with `gruas_leads_dir()`: returns `dirname(__DIR__) . '/private/leads'` when it exists and is writable, else the public root. Use it in both endpoints. Document in `docs/VENDERCRM-CONFIGURATION.md`.
+13. **Harden `lead-event.php`.** Same origin check, per-IP throttle at 30 per minute, write to `lead-events-YYYY-MM.jsonl` in `gruas_leads_dir()`.
+14. **Lead report.** `tools/lead-report.php` (CLI): reads `leads.jsonl` and all `lead-events-*.jsonl`, prints a monthly table per event type, then breakdowns by `zona`, `page`, `utm_campaign`. Flag `--month=2026-10`. Add `"report": "php tools/lead-report.php"` to `package.json`.
+15. **Tests.** New `tests/lead-handlers.cjs` using the same PHP `-n` stub approach as the existing test: honeypot 204, empty phone 400, invalid phone 400, `09` normalisation, foreign Origin 403, 6th request 429, non-AJAX redirect to `/gracias.html`, `lead-event.php` whitelist and monthly file name. Add it to `npm test`.
 
-## PR E — content (items 19, 20) — do last, and stop to show me the copy before committing
+### Subagent C — SEO plumbing (items 18, 21, 22, 24). Owns: `sitemap.xml`, `tools/build-sitemap.js`, `site.webmanifest`, `assets/img/icon-*.png`, image attributes in all `.html`, the consent banner markup in all `.html` and `site.js` section 5, the lazy/fetchpriority check in `qa/render.js`.
 
-19. **Images on the 15 image-less pages.** Zone pages: `<picture>` with `gran-asuncion-grua-circulando` (AVIF + WebP, existing dimensions) below the hero copy with a zone-specific `alt`. `servicios/ambulancias-privadas/`: use the existing `ambulancia-privada-traslado` asset. `nosotros/`: reuse `grua-plataforma-cargando-auto-asuncion`. `contacto/`, `cotizador/`, `preguntas-frecuentes/`: no image, keep them fast. Run `npm run qa` for CLS and overflow.
-20. **Zone page depth.** For each of the seven `zonas/*` pages add: one paragraph naming two or three real roads or landmarks of that zone (Ruta 2 and Mercado 4 for San Lorenzo, the airport and Ruta Transchaco for Luque, Acceso Sur for Lambaré and so on; verify each one), a three-question zone FAQ with `FAQPage` JSON-LD, and a "Zonas vecinas" block linking two neighbouring zones. Target 900 to 1100 words per page. Write it in es-PY voseo, no prices, no response-time promises that the home page does not already make. Show me the copy for one zone first and wait for my approval before doing the other six.
+18. **Generated sitemap.** `tools/build-sitemap.js` walks every `index.html` plus `politica-de-privacidad.html` (exclude `404.html`, `gracias.html`), emits `<loc>` and `<lastmod>` from `git log -1 --format=%cI -- <file>`, keeps priorities by folder (home 1.0, servicios and cotizador 0.9, zonas and nosotros 0.8, contacto 0.7, FAQ 0.6, guias 0.5, privacidad 0.2). Regenerate `sitemap.xml`. Add `"sitemap"` script and a staleness check to `npm run check`.
+21. **Image attributes.** First `<img>` on each page: `fetchpriority="high"`, no `loading`. Every other `<img>`: `loading="lazy" decoding="async"`. Add a check to `qa/render.js`.
+22. **Consent banner.** Remove the banner markup from all pages and section 5 of `site.js` (nothing third-party is loaded). Leave a comment in `site.js` explaining how to re-add it as gated analytics loading when GA4/GTM arrives. Update `politica-de-privacidad.html` only where it names the banner.
+24. **Manifest.** `theme_color` and `background_color` to `#FBFAF8`. Generate `assets/img/icon-192.png` and `icon-512.png` from `favicon.svg` with Pillow (see `tools/build-og.py` for conventions) and list them in `site.webmanifest`.
+
+### Subagent D — QA harness and comments (items 6, 8, 9). Owns: `qa/qa.js`, `qa/README.md`, comments in `tools/build-images.py` and `assets/js/site.js` (comments only, no logic), the `qa:spec` script in `package.json`.
+
+6. Remove hardcoded `/home/user/gruas` and `8899` from `qa/qa.js`: `path.resolve(__dirname, '..')` and `process.env.BASE || 'http://localhost:8899'`. Make `qa.js` start its own static server the way `render.js` does, sharing the server code. Add `"qa:spec": "node qa/qa.js"`.
+8. Standardise on the `playwright` package already in `devDependencies`; drop the `playwright-core` instructions from `qa/README.md`.
+9. Rewrite `qa/README.md` in Spanish only. Translate Swedish comments in `tools/build-images.py` to English (tooling) and in `assets/js/site.js` to Spanish (site-facing). Comments only, no behavioural change; `git diff --stat` on `site.js` must show comment lines only.
+
+Open PRs B, C, D. Tell me, then wait for my merges before Phase 3 (Phase 3 edits the same HTML files as C).
+
+## Phase 3 — content (items 19, 20). Sonnet 5.5 for copy, you review. Stop for my approval on the first zone.
+
+19. **Images on image-less pages.** Zone pages: a `<picture>` with `gran-asuncion-grua-circulando` (existing AVIF + WebP, existing dimensions, `loading="lazy"`) below the hero copy with a zone-specific Spanish `alt`. `servicios/ambulancias-privadas/`: the existing `ambulancia-privada-traslado` asset. `nosotros/`: reuse `grua-plataforma-cargando-auto-asuncion`. Leave `contacto/`, `cotizador/`, `preguntas-frecuentes/` without images. Run `npm run qa` for CLS and overflow.
+20. **Zone page depth.** For each of the seven `zonas/*` pages: one paragraph naming two or three real roads or landmarks of that zone (verify each with a web search; Ruta 2 and Mercado 4 for San Lorenzo, Silvio Pettirossi airport and Ruta Transchaco for Luque, Acceso Sur for Lambaré, and so on), a three-question zone FAQ with `FAQPage` JSON-LD, and a "Zonas vecinas" block linking two neighbouring zones. Target 900 to 1100 words. es-PY voseo, no prices, no response-time promises. **Do San Lorenzo first, show me the copy in chat, and wait for my approval before the subagent does the other six.** Then one PR E.
 
 ## Delivery
 
-For each PR: branch `claude/gruas-<letter>-<short-name>`, title in English, body with the item numbers covered and the `npm run check` output. Open PR A first; the others can be opened in parallel but rebased after A merges since A touches `.htaccess`, `package.json` and the cache string.
+After each phase: list PR links, the `npm run check` output, and anything you deliberately did not do and why. Do not merge anything yourself.
