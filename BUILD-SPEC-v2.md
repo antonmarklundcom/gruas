@@ -1071,7 +1071,7 @@ Inget av detta blockerar bygget. Allt av det gör sajten starkare.
 
 | # | Punkt | Effekt om den fylls |
 |---|---|---|
-| 1 | `{CRM_DOMAIN}` i `lead-forward.php` + `VENDERCRM_API_KEY` i hPanel | leads går till CRM i stället för att bara loggas i `leads.jsonl` |
+| 1 | `VENDERCRM_API_KEY` i hPanel (CRM-URL är satt till https://crm.clientes.com.py i `lead-forward.php`) | leads går till CRM i stället för att bara loggas i `leads.jsonl` |
 | 2 | Riktiga foton på egna enheter | `proof-photo`-slots kan fyllas; idag finns de inte alls |
 | 3 | Google-omdömen | §8 Compromiso kan bytas mot riktiga citat med förnamn + barrio |
 | 4 | Habilitación för ambulanstransport | vertikalens starkaste differential, i dag osynlig |
