@@ -1,7 +1,8 @@
 <?php
 // Reenvía leads del formulario a venderCRM.
 // La API key NUNCA vive en este archivo: viene de la variable de entorno
-// VENDERCRM_API_KEY configurada en hPanel. Nunca llamar al CRM desde JS.
+// VENDERCRM_API_KEY o, si no existe, de ../private/vendercrm.php (fuera de
+// public_html). Nunca llamar al CRM desde JS.
 //
 // Mientras venderCRM no esté disponible (sin API key, o si el CRM responde
 // con error) el lead se guarda igual en leads.jsonl para no perder ninguno.
@@ -60,6 +61,19 @@ $stored = @file_put_contents(
 
 // ---- envío al CRM (solo si ya está configurado) ----
 $apiKey  = getenv('VENDERCRM_API_KEY');
+if (empty($apiKey)) {
+    // Hostinger compartido no siempre pasa variables de entorno a PHP: archivo
+    // privado FUERA de public_html, p. ej. domains/gruas.com.py/private/vendercrm.php,
+    // que devuelve ['VENDERCRM_API_KEY' => '…']. Nunca commitearlo.
+    $docRoot = realpath((string) ($_SERVER['DOCUMENT_ROOT'] ?? __DIR__)) ?: __DIR__;
+    $privateFile = dirname($docRoot) . '/private/vendercrm.php';
+    if (is_file($privateFile)) {
+        $privateCfg = require $privateFile;
+        if (is_array($privateCfg)) {
+            $apiKey = (string) ($privateCfg['VENDERCRM_API_KEY'] ?? $privateCfg['api_key'] ?? '');
+        }
+    }
+}
 $sentOk  = false;
 
 if (!empty($apiKey)) {
@@ -83,7 +97,7 @@ if (!empty($apiKey)) {
         error_log(sprintf('VenderCRM lead failed [%d] %s %s', $status, substr((string) $response, 0, 500), $curlErr));
     }
 } else {
-    error_log('VenderCRM: VENDERCRM_API_KEY no configurada; lead solo en leads.jsonl');
+    error_log('VenderCRM: VENDERCRM_API_KEY no configurada (env o ../private/vendercrm.php); lead solo en leads.jsonl');
 }
 
 // El lead cuenta como recibido si quedó guardado localmente o si el CRM lo aceptó.
